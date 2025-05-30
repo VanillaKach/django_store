@@ -1,34 +1,17 @@
 from django.core.management.base import BaseCommand
 from catalog.models import Product, Category
-import json
+from django.core.management import call_command
 
 class Command(BaseCommand):
-    help = 'Load products from fixtures'
+    help = 'Load initial data for products and categories'
 
     def handle(self, *args, **options):
-        # Удаление старых данных
+        self.stdout.write("Deleting old data...")
         Product.objects.all().delete()
         Category.objects.all().delete()
 
-        # Загрузка категорий
-        with open('fixtures/categories.json', 'r') as file:
-            categories = json.load(file)
-            for cat in categories:
-                Category.objects.create(
-                    name=cat['fields']['name'],
-                    description=cat['fields']['description']
-                )
+        self.stdout.write("Loading fixtures...")
+        call_command('loaddata', 'categories.json', app_label='catalog')
+        call_command('loaddata', 'products.json', app_label='catalog')
 
-        # Загрузка продуктов
-        with open('fixtures/products.json', 'r') as file:
-            products = json.load(file)
-            for prod in products:
-                category = Category.objects.get(id=prod['fields']['category'])
-                Product.objects.create(
-                    name=prod['fields']['name'],
-                    description=prod['fields']['description'],
-                    category=category,
-                    price=prod['fields']['price']
-                )
-
-        self.stdout.write(self.style.SUCCESS('Data loaded successfully'))
+        self.stdout.write(self.style.SUCCESS('Successfully loaded data'))
