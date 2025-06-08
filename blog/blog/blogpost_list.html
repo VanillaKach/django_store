@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Блог</h1>
+{% for post in posts %}
+<div class="post">
+    <h2><a href="{% url 'blog:detail' post.pk %}">{{ post.title }}</a></h2>
+    <img src="{{ post.preview.url }}" alt="{{ post.title }}" width="200">
+    <p>Просмотров: {{ post.views_count }}</p>
+</div>
+{% endfor %}
+{% endblock %}
