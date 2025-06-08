@@ -2,6 +2,21 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product
 from .forms import ProductForm
 from django.core.paginator import Paginator
+from django.views.generic import ListView, DetailView, TemplateView
+
+
+class ProductListView(ListView):
+    model = Product
+    template_name = 'catalog/home.html'
+    context_object_name = 'products'
+    paginate_by = 5
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'catalog/product_detail.html'
+
+class ContactView(TemplateView):
+    template_name = 'catalog/contacts.html'
 
 
 def home(request):
