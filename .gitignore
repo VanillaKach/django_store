@@ -1,2 +1,7 @@
-# created by virtualenv automatically
-.venv/bin
+.env
+.idea/
+*.pyc
+__pycache__/
+*.sqlite3
+/media/
+/static/
