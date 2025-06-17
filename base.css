@@ -1,0 +1,22 @@
+/* Формы */
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
+
+.form-check-input {
+    width: auto;
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+/* Сообщения об ошибках */
+.errorlist {
+    color: #dc3545;
+    list-style: none;
+    padding-left: 0;
+}
