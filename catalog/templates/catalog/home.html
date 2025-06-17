@@ -1,0 +1,37 @@
+{% extends 'catalog/base.html' %}
+
+{% block content %}
+<h1>Последние товары</h1>
+<div class="product-list">
+    {% for product in page_obj %}
+    <div class="product-card">
+        <a href="{% url 'product_detail' product.pk %}">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" width="200">
+            {% endif %}
+        </a>
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.description|truncatechars:100 }}</p>
+        <p><strong>Цена:</strong> {{ product.price }} руб.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">следующая</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}
