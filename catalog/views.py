@@ -1,9 +1,9 @@
-
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, TemplateView
 from django.urls import reverse_lazy
 from .models import Product
 from .forms import ProductForm
 from django.core.paginator import Paginator
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # CBV для продуктов
 class ProductListView(ListView):
@@ -15,13 +15,15 @@ class ProductListView(ListView):
     def get_queryset(self):
         return super().get_queryset().order_by('-created_at')
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
+    login_url = '/users/login/'
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
     success_url = reverse_lazy('catalog:product_list')
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
+    login_url = '/users/login/'
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
@@ -33,7 +35,8 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'catalog/product_detail.html'
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
+    login_url = '/users/login/'
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('catalog:product_list')

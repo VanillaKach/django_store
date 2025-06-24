@@ -20,7 +20,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'catalog',
     'blog.apps.BlogConfig',
-    'blog'
+    'blog',
+    'users.apps.UsersConfig'
 ]
 
 MIDDLEWARE = [
@@ -90,6 +91,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = 'users.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
@@ -98,3 +100,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'your-email@yandex.ru'
 EMAIL_HOST_PASSWORD = 'your-password'
 ADMIN_EMAIL = 'admin-email@example.com'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
