@@ -1,38 +1,41 @@
+import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, TemplateView
 from django.urls import reverse_lazy
 from blog import models
-from .models import Product
+from .models import Product, Category
 from .forms import ProductForm
 from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import permission_required
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+from .services import get_products_by_category
+from django.core.cache import cache
 
 # CBV для продуктов
 class ProductListView(ListView):
     model = Product
-    template_name = 'catalog/product_list.html'
+    template_name = 'catalog/home.html'
+    paginate_by = 10
     context_object_name = 'products'
-    paginate_by = 5
 
     def get_queryset(self):
-        return super().get_queryset().order_by('-created_at')
+        cache_key = 'product_list_all'
+        products = cache.get(cache_key)
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        if not self.request.user.is_authenticated:
-            return qs.filter(publish_status='published')
+        if not products:
+            products = super().get_queryset()
+            # Кешируем QuerySet
+            cache.set(cache_key, products, 60 * 30)  # 30 минут
 
-        # Для авторизованных пользователей показываем больше
-        if self.request.user.has_perm('catalog.can_change_publish_status'):
-            return qs
-        elif self.request.user.is_authenticated:
-            return qs.filter(
-                models.Q(publish_status='published') |
-                models.Q(owner=self.request.user)
-            )
-        return qs.filter(publish_status='published')
+        return products
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cache_timestamp'] = cache.get('product_list_timestamp')
+        return context
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -123,3 +126,29 @@ def change_publish_status(request, pk):
             product.publish_status = new_status
             product.save()
     return redirect('catalog:product_detail', pk=product.pk)
+
+
+@method_decorator(cache_page(60 * 5), name='dispatch')  # Кешируем на 5 минут
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'catalog/product_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['now'] = datetime.now()  # Для проверки работы кеша
+        return context
+
+
+class CategoryProductsView(ListView):
+    template_name = 'catalog/category_products.html'
+    context_object_name = 'products'
+    paginate_by = 10
+
+    def get_queryset(self):
+        self.category = get_object_or_404(Category, slug=self.kwargs['slug'])
+        return get_products_by_category(self.kwargs['slug'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = self.category
+        return context

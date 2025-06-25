@@ -1,6 +1,13 @@
 {% extends 'catalog/base.html' %}
 
 {% block content %}
+{% if cache_timestamp %}
+<div class="cache-info">
+    Данные загружены из кеша: {{ cache_timestamp|date:"H:i:s" }}
+</div>
+{% endif %}
+
+{% block content %}
 <h1>Последние товары</h1>
 <div class="product-list">
     {% for product in page_obj %}
