@@ -12,3 +12,27 @@
     <p><small>Добавлен: {{ product.created_at }}</small></p>
 </div>
 {% endblock %}
+
+{% if user == product.owner or user.has_perm('catalog.change_product') %}
+    <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-primary">Редактировать</a>
+{% endif %}
+
+{% if user == product.owner or user.has_perm('catalog.delete_product') %}
+    <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+{% endif %}
+
+{% if user.has_perm('catalog.can_change_publish_status') %}
+    <div class="mt-3">
+        <form method="post" action="{% url 'catalog:change_publish_status' product.pk %}">
+            {% csrf_token %}
+            <select name="status" class="form-select">
+                {% for value, label in product.PUBLISH_STATUS %}
+                    <option value="{{ value }}" {% if product.publish_status == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-warning mt-2">Обновить статус</button>
+        </form>
+    </div>
+{% endif %}
