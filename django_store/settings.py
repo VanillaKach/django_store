@@ -101,3 +101,20 @@ EMAIL_HOST_USER = 'your-email@yandex.ru'
 EMAIL_HOST_PASSWORD = 'your-password'
 ADMIN_EMAIL = 'admin-email@example.com'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Настройки кеширования
+CACHE_ENABLED = True
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "KEY_PREFIX": "django_store"
+    }
+}
+
+# Время жизни кеша по умолчанию (в секундах)
+CACHE_TTL = 60 * 15  # 15 минут
