@@ -47,7 +47,6 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
-        form.instance.publish_status = 'moderation'
         return super().form_valid(form)
 
 
