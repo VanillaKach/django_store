@@ -19,6 +19,15 @@
 
 {% if user == product.owner or user.has_perm('catalog.delete_product') %}
     <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+
+{% if user.is_authenticated and (user == product.owner or user.has_perm('catalog.change_product')) %}
+    <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-primary">Редактировать</a>
+{% endif %}
+
+{% if user.is_authenticated and (user == product.owner or user.has_perm('catalog.delete_product')) %}
+    <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+{% endif %}
+
 {% endif %}
 
 {% if user.has_perm('catalog.can_change_publish_status') %}

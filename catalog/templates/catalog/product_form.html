@@ -1,7 +1,7 @@
 {% extends 'catalog/base.html' %}
 
 {% block content %}
-<h2>{% if object %}Редактирование{% else %}Создание{% endif %} продукта</h2>
+<h2>{% if object %}Редактирование{% else %}Создание{% endif %} товара</h2>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
