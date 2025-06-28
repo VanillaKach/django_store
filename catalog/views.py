@@ -39,7 +39,6 @@ class ProductListView(ListView):
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
-    login_url = '/users/login/'
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
@@ -47,6 +46,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
+        form.instance.publish_status = 'moderation'
         return super().form_valid(form)
 
 
@@ -68,6 +68,10 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def handle_no_permission(self):
         raise PermissionDenied("У вас нет прав для редактирования этого продукта")
 
+    def test_func(self):
+        product = self.get_object()
+        return product.owner == self.request.user or self.request.user.has_perm('catalog.change_product')
+
 
 class ProductDetailView(DetailView):
     model = Product
@@ -87,6 +91,11 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def handle_no_permission(self):
         raise PermissionDenied("У вас нет прав для удаления этого продукта")
+
+    def test_func(self):
+        product = self.get_object()
+        return (product.owner == self.request.user or
+                self.request.user.has_perm('catalog.delete_product'))
 
 
 # Другие представления

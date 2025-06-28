@@ -12,14 +12,17 @@
 <div class="product-list">
     {% for product in page_obj %}
     <div class="product-card">
-        <a href="{% url 'product_detail' product.pk %}">
+        <a href="{% url 'catalog:product_detail' product.pk %}">
             {% if product.image %}
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" width="200">
             {% endif %}
+            <h3>{{ product.name }}</h3>
         </a>
-        <h3>{{ product.name }}</h3>
         <p>{{ product.description|truncatechars:100 }}</p>
-        <p><strong>Цена:</strong> {{ product.price }} руб.</p>
+        <p>Цена: {{ product.price }} руб.</p>
+        {% if product.publish_status != 'published' %}
+            <span class="badge bg-warning">{{ product.get_publish_status_display }}</span>
+        {% endif %}
     </div>
     {% endfor %}
 </div>
