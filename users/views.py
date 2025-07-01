@@ -5,6 +5,8 @@ from django.urls import reverse_lazy
 from django.core.mail import send_mail
 from .forms import UserRegisterForm, UserLoginForm, UserProfileForm
 from .models import User
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class RegisterView(CreateView):
@@ -30,11 +32,11 @@ class RegisterView(CreateView):
 
 
 class UserLoginView(LoginView):
-    form_class = UserLoginForm
+    form_class = AuthenticationForm
     template_name = 'users/login.html'
 
 
-class ProfileView(UpdateView):
+class ProfileView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = UserProfileForm
     template_name = 'users/profile.html'
